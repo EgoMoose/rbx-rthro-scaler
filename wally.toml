@@ -1,0 +1,16 @@
+[package]
+name = "egomoose/rthro-scale-normalizer"
+description = "https://github.com/EgoMoose/rthro-scale-normalizer"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "MIT"
+exclude = ["**"]
+include = ["src", "src/**", "wally.toml", "wally.lock", "default.project.json", "LICENSE"]
+private = true
+
+[dependencies]
+Deque = "egomoose/deque@0.1.1"
+
+[dev-dependencies]
+TestEZ = "roblox/testez@0.4.1"

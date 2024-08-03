@@ -1,0 +1,24 @@
+{
+	"name": "rthro-scale-normalizer",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Packages": {
+				"$path": "Packages",
+				"RthroScaleNormalizer": {
+					"$path": "default.project.json"
+				}
+			},
+			"DevPackages": {
+				"$path": "DevPackages"
+			}
+		},
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"TestRunner": {
+				"$path": "test/TestRunner.server.luau"
+			}
+		}
+	}
+}
