@@ -1,5 +1,5 @@
 {
-	"name": "rthro-scale-normalizer",
+	"name": "rthro-scaler",
 	"tree": {
 		"$path": "src"
 	}

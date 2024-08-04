@@ -2,7 +2,7 @@
 
 local Players = game:GetService("Players") :: Players
 
-local RthroScaleNormalizer = require(script.Parent)
+local RthroScaler = require(script.Parent)
 local HumanoidDescriptionHelper = require(script.Parent.HumanoidDescriptionHelper)
 
 local function getDescription(player: Player)
@@ -12,7 +12,7 @@ local function getDescription(player: Player)
 end
 
 local function scaleCharacter(character: Model)
-	RthroScaleNormalizer.byClassicScale(character, 1)
+	RthroScaler.relative(character, 0.5)
 end
 
 local function createDisplayDummies(player: Player)

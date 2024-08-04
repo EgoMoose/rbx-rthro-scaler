@@ -1,6 +1,6 @@
 [package]
-name = "egomoose/rthro-scale-normalizer"
-description = "https://github.com/EgoMoose/rthro-scale-normalizer"
+name = "egomoose/rthro-scaler"
+description = "https://github.com/EgoMoose/rbx-rthro-scaler"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"

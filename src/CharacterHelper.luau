@@ -5,8 +5,8 @@ local Players = game:GetService("Players") :: Players
 local Packages = script.Parent.Parent
 local Deque = require(Packages.Deque)
 
-local RigHeight = {}
-local cachedDefaultRigHeight: number?
+local CharacterHelper = {}
+local cachedClassicRigHeight: number?
 
 -- Private
 
@@ -44,22 +44,10 @@ local function getCorners(cframe: CFrame, size: Vector3)
 	return corners
 end
 
--- Public
-
-function RigHeight.get(rig: Model, includeRootPart: boolean)
-	-- this function must be deterministic in the sense that it can be called on
-	-- a character that is being actively animated or hasn't been parented to the data-model yet
-	-- as such we must calculate this by using the motors in hrp object space without applying the transform property
-
-	local humanoid = rig:FindFirstChildWhichIsA("Humanoid")
-	local rootPart = humanoid and humanoid.RootPart
-
-	assert(humanoid, "Cannot get the rig height because it's missing a humanoid.")
-	assert(rootPart, "Cannot get the rig height because it's missing a root part.")
-
+local function getBodyPartMotorsByPart0(character: Model, humanoid: Humanoid, rootPart: BasePart)
 	local bodyPartSet = {}
 	local bodyPartMotorsByPart0 = {}
-	for _, bodyPart in rig:GetChildren() do
+	for _, bodyPart in character:GetChildren() do
 		if bodyPart:IsA("BasePart") and (bodyPart == rootPart or humanoid:GetBodyPartR15(bodyPart)) then
 			bodyPartSet[bodyPart] = true
 			bodyPartMotorsByPart0[bodyPart] = {}
@@ -78,6 +66,24 @@ function RigHeight.get(rig: Model, includeRootPart: boolean)
 			end
 		end
 	end
+
+	return bodyPartMotorsByPart0
+end
+
+-- Public
+
+function CharacterHelper.getHeight(character: Model, includeRootPart: boolean)
+	-- this function must be deterministic in the sense that it can be called on
+	-- a character that is being actively animated or hasn't been parented to the data-model yet
+	-- as such we must calculate this by using the motors in hrp object space without applying the transform property
+
+	local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+	local rootPart = humanoid and humanoid.RootPart
+
+	assert(humanoid, "Cannot get the rig height because it's missing a humanoid.")
+	assert(rootPart, "Cannot get the rig height because it's missing a root part.")
+
+	local bodyPartMotorsByPart0 = getBodyPartMotorsByPart0(character, humanoid, rootPart)
 
 	local stack = Deque.raw({ {
 		part0 = rootPart,
@@ -112,21 +118,21 @@ function RigHeight.get(rig: Model, includeRootPart: boolean)
 	return humanoid.HipHeight + rootPart.Size.Y / 2 + (maxHeight or 0)
 end
 
-function RigHeight.getDefault()
-	if not cachedDefaultRigHeight then
+function CharacterHelper.getClassicHeight()
+	if not cachedClassicRigHeight then
 		local description = Instance.new("HumanoidDescription")
 		description.BodyTypeScale = 0
 
 		local dummy = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
-		local height = RigHeight.get(dummy, true)
+		local height = CharacterHelper.getHeight(dummy, true)
 		dummy:Destroy()
 
-		cachedDefaultRigHeight = height
+		cachedClassicRigHeight = height
 	end
 
-	return cachedDefaultRigHeight :: number
+	return cachedClassicRigHeight :: number
 end
 
 --
 
-return RigHeight
+return CharacterHelper

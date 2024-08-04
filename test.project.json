@@ -1,12 +1,12 @@
 {
-	"name": "rthro-scale-normalizer",
+	"name": "rthro-scaler",
 	"tree": {
 		"$className": "DataModel",
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
 			"Packages": {
 				"$path": "Packages",
-				"RthroScaleNormalizer": {
+				"RthroScaler": {
 					"$path": "default.project.json"
 				}
 			},
