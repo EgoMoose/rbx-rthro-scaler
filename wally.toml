@@ -7,7 +7,6 @@ realm = "shared"
 license = "MIT"
 exclude = ["**"]
 include = ["src", "src/**", "wally.toml", "wally.lock", "default.project.json", "LICENSE"]
-private = true
 
 [dependencies]
 Deque = "egomoose/deque@0.1.1"
