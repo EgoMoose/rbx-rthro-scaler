@@ -8,6 +8,8 @@ local Deque = require(Packages.Deque)
 local CharacterHelper = {}
 local cachedClassicRigHeight: number?
 
+local INCLUDE_ROOT_PART_IN_HEIGHT_MEASUREMENT = false
+
 -- Private
 
 local function getAccurateSize(part: BasePart)
@@ -72,7 +74,7 @@ end
 
 -- Public
 
-function CharacterHelper.getHeight(character: Model, includeRootPart: boolean)
+function CharacterHelper.getHeight(character: Model)
 	-- this function must be deterministic in the sense that it can be called on
 	-- a character that is being actively animated or hasn't been parented to the data-model yet
 	-- as such we must calculate this by using the motors in hrp object space without applying the transform property
@@ -94,7 +96,7 @@ function CharacterHelper.getHeight(character: Model, includeRootPart: boolean)
 	while stack:getLength() > 0 do
 		local popped = stack:popBack()
 
-		if includeRootPart or popped.part0 ~= rootPart then
+		if INCLUDE_ROOT_PART_IN_HEIGHT_MEASUREMENT or popped.part0 ~= rootPart then
 			local size = getAccurateSize(popped.part0)
 			for i, corner in getCorners(popped.part0CF, size) do
 				if not maxHeight or corner.Y > maxHeight then
@@ -124,7 +126,7 @@ function CharacterHelper.getClassicHeight()
 		description.BodyTypeScale = 0
 
 		local dummy = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
-		local height = CharacterHelper.getHeight(dummy, true)
+		local height = CharacterHelper.getHeight(dummy)
 		dummy:Destroy()
 
 		cachedClassicRigHeight = height

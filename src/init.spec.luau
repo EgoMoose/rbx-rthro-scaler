@@ -1,64 +1,65 @@
 --!strict
 
 local Players = game:GetService("Players") :: Players
+local AvatarEditorService = game:GetService("AvatarEditorService") :: AvatarEditorService
 
-local RthroScaler = require(script.Parent)
-local HumanoidDescriptionHelper = require(script.Parent.HumanoidDescriptionHelper)
+local MARGIN_OF_ERROR = 1E-4
+local BUNDLES = { 5667, 474, 592, 370, 501, 3416, 338106, 319935, 389802, 393119, 451396, 382840, 295206, 512 }
 
-local function getDescription(player: Player)
-	--local description = assert(HumanoidDescriptionHelper.fromBundle(5667), "Unable to load the bundle.")
-	local description = assert(HumanoidDescriptionHelper.fromPlayer(player), "Unable to load the bundle.")
-	return description
-end
+local function humanoidDescriptionFromBundle(bundleId: number): HumanoidDescription?
+	local info = AvatarEditorService:GetItemDetails(bundleId, Enum.AvatarItemType.Bundle)
+	local items = if info then info.BundledItems else {}
 
-local function scaleCharacter(character: Model)
-	RthroScaler.relative(character, 0.5)
-end
-
-local function createDisplayDummies(player: Player)
-	local simpleDummy = Players:CreateHumanoidModelFromDescription(
-		HumanoidDescriptionHelper.fromProperties({
-			BodyTypeScale = 0,
-		}),
-		Enum.HumanoidRigType.R15
-	)
-
-	local bundleDummy = Players:CreateHumanoidModelFromDescription(getDescription(player), Enum.HumanoidRigType.R15)
-	local scaledDummy = bundleDummy:Clone()
-	scaleCharacter(scaledDummy)
-
-	for i, dummy in { simpleDummy, scaledDummy, bundleDummy } do
-		local humanoid = dummy:WaitForChild("Humanoid") :: Humanoid
-		local rootPart = dummy:WaitForChild("HumanoidRootPart") :: BasePart
-		rootPart.Color = Color3.new(1, 0, 0)
-		rootPart.Transparency = 0.7
-		rootPart.Anchored = true
-
-		local floorOffset = humanoid.HipHeight + rootPart.Size.Y / 2
-		dummy:PivotTo(CFrame.new(i * 5, floorOffset, 0))
-		dummy.Parent = workspace
+	local itemId: number?
+	for _, item in items do
+		if item.Type == "UserOutfit" then
+			itemId = item.Id
+			break
+		end
 	end
+
+	if itemId and itemId > 0 then
+		local description = Players:GetHumanoidDescriptionFromOutfitId(itemId)
+		description.Name = info.Name
+		return description
+	end
+
+	return nil
 end
 
 return function()
-	local animate = Instance.new("LocalScript")
-	animate.Name = "Animate"
-	-- animate.Parent = game.StarterPlayer.StarterCharacterScripts
+	local RthroScaler = require(script.Parent)
+	local CharacterHelper = require(script.Parent.CharacterHelper)
 
-	Players.CharacterAutoLoads = false
-	Players.PlayerAdded:Connect(function(player)
-		createDisplayDummies(player)
+	for _, bundleId in BUNDLES do
+		local description = assert(humanoidDescriptionFromBundle(bundleId), `Unable to load bundle from id: {bundleId}`)
+		local dummyTemplate = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
 
-		while true do
-			player:LoadCharacterWithHumanoidDescription(getDescription(player))
+		describe(`[{bundleId}] - {description.Name}`, function()
+			it("should .raw set height", function()
+				local dummy = dummyTemplate:Clone()
+				RthroScaler.raw(dummy, 10)
 
-			if player.Character then
-				scaleCharacter(player.Character)
+				expect(CharacterHelper.getHeight(dummy)).to.near(10, MARGIN_OF_ERROR)
+				dummy:Destroy()
+			end)
 
-				local humanoid = player.Character:WaitForChild("Humanoid") :: Humanoid
-				humanoid.Died:Wait()
-				task.wait(Players.RespawnTime)
-			end
-		end
-	end)
+			it("should .relative set height", function()
+				local dummy = dummyTemplate:Clone()
+				local height = CharacterHelper.getHeight(dummy)
+				RthroScaler.relative(dummy, 0.5)
+
+				expect(CharacterHelper.getHeight(dummy)).to.near(height * 0.5, MARGIN_OF_ERROR)
+				dummy:Destroy()
+			end)
+
+			it("should .classic set height", function()
+				local dummy = dummyTemplate:Clone()
+				RthroScaler.classic(dummy, 1)
+
+				expect(CharacterHelper.getHeight(dummy)).to.near(CharacterHelper.getClassicHeight(), MARGIN_OF_ERROR)
+				dummy:Destroy()
+			end)
+		end)
+	end
 end

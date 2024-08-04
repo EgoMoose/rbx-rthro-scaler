@@ -2,8 +2,7 @@
 
 local CharacterHelper = require(script.CharacterHelper)
 
-local RETAIN_MASS = true
-local INCLUDE_ROOT_PART_IN_HEIGHT_MEASUREMENT = false
+local RETAIN_MASS_AFTER_SCALE = true
 
 local RthroScaler = {}
 
@@ -85,7 +84,7 @@ local function setHeight(character: Model, currentHeight: number, height: number
 				parent.Size = parent.Size * scale
 				descendant.Value = descendant.Value * scale
 
-				if RETAIN_MASS then
+				if RETAIN_MASS_AFTER_SCALE then
 					local newMass = parent:GetMass()
 					local physicalProperties = parent.CurrentPhysicalProperties
 					local volume = newMass / physicalProperties.Density
@@ -138,7 +137,7 @@ end
 	@param height number -- The height in studs to set.
 ]=]
 function RthroScaler.raw(character: Model, height: number)
-	local currentHeight = CharacterHelper.getHeight(character, INCLUDE_ROOT_PART_IN_HEIGHT_MEASUREMENT)
+	local currentHeight = CharacterHelper.getHeight(character)
 	setHeight(character, currentHeight, height)
 end
 
@@ -149,7 +148,7 @@ end
 	@param scale number -- Percentage of the classic height.
 ]=]
 function RthroScaler.classic(character: Model, scale: number)
-	local currentHeight = CharacterHelper.getHeight(character, INCLUDE_ROOT_PART_IN_HEIGHT_MEASUREMENT)
+	local currentHeight = CharacterHelper.getHeight(character)
 	local classicHeight = CharacterHelper.getClassicHeight() * scale
 	setHeight(character, currentHeight, classicHeight)
 end
@@ -161,7 +160,7 @@ end
 	@param scale number -- Percentage of the current height.
 ]=]
 function RthroScaler.relative(character: Model, scale: number)
-	local currentHeight = CharacterHelper.getHeight(character, INCLUDE_ROOT_PART_IN_HEIGHT_MEASUREMENT)
+	local currentHeight = CharacterHelper.getHeight(character)
 	local scaledHeight = currentHeight * scale
 	setHeight(character, currentHeight, scaledHeight)
 end
