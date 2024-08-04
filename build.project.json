@@ -1,0 +1,15 @@
+{
+	"name": "RthroScaler",
+	"tree": {
+		"$className": "ModuleScript",
+		"$properties": {
+			"Source": "--!strict\n\nreturn require(script.Packages._TargetPackage)"
+		},
+		"Packages": {
+			"$path": "Packages",
+			"_TargetPackage": {
+				"$path": "src"
+			}
+		}
+	}
+}
