@@ -3,7 +3,7 @@
 local Players = game:GetService("Players") :: Players
 local AvatarEditorService = game:GetService("AvatarEditorService") :: AvatarEditorService
 
-local BUNDLE_ID = 451396
+local BUNDLE_ID = 5667
 local SHOW_ROOT_PART = false
 local DISPLAY_DISTANCE_TYPE = Enum.HumanoidDisplayDistanceType.Viewer
 

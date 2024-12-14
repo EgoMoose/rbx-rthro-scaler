@@ -4,24 +4,30 @@ local Players = game:GetService("Players") :: Players
 local AvatarEditorService = game:GetService("AvatarEditorService") :: AvatarEditorService
 
 local MARGIN_OF_ERROR = 1E-4
-local BUNDLES = { 5667, 474, 592, 370, 501, 3416, 338106, 319935, 389802, 393119, 451396, 382840, 295206, 512 }
+local BUNDLES = { 5667, 474, 592, 370, 501, 3416, 338106, 319935, 389802, 393119, 382840, 295206, 512 }
 
 local function humanoidDescriptionFromBundle(bundleId: number): HumanoidDescription?
-	local info = AvatarEditorService:GetItemDetails(bundleId, Enum.AvatarItemType.Bundle)
-	local items = if info then info.BundledItems else {}
+	local info: { [any]: any }?
+	local success = pcall(function()
+		info = AvatarEditorService:GetItemDetails(bundleId, Enum.AvatarItemType.Bundle)
+	end)
 
-	local itemId: number?
-	for _, item in items do
-		if item.Type == "UserOutfit" then
-			itemId = item.Id
-			break
+	if success and info then
+		local items = if info then info.BundledItems else {}
+
+		local itemId: number?
+		for _, item in items do
+			if item.Type == "UserOutfit" then
+				itemId = item.Id
+				break
+			end
 		end
-	end
 
-	if itemId and itemId > 0 then
-		local description = Players:GetHumanoidDescriptionFromOutfitId(itemId)
-		description.Name = info.Name
-		return description
+		if itemId and itemId > 0 then
+			local description = Players:GetHumanoidDescriptionFromOutfitId(itemId)
+			description.Name = info.Name
+			return description
+		end
 	end
 
 	return nil
