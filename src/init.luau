@@ -1,10 +1,11 @@
 --!strict
 
+local RunService = game:GetService("RunService")
+
 local CharacterHelper = require(script.CharacterHelper)
 
-local RETAIN_MASS_AFTER_SCALE = true
-
 local RthroScaler = {}
+local isMassRetained = true
 
 -- Private
 
@@ -84,7 +85,7 @@ local function setHeight(character: Model, currentHeight: number, height: number
 				parent.Size = parent.Size * scale
 				descendant.Value = descendant.Value * scale
 
-				if RETAIN_MASS_AFTER_SCALE then
+				if isMassRetained then
 					local newMass = parent:GetMass()
 					local physicalProperties = parent.CurrentPhysicalProperties
 					local volume = newMass / physicalProperties.Density
@@ -126,6 +127,10 @@ local function setHeight(character: Model, currentHeight: number, height: number
 
 	humanoid.HipHeight = humanoid.HipHeight * scale
 	rootPart.CFrame = floorCF * CFrame.new(0, rootPart.Size.Y / 2 + humanoid.HipHeight, 0)
+
+	if RunService:IsClient() then
+		humanoid:BuildRigFromAttachments()
+	end
 end
 
 -- Public
@@ -164,6 +169,39 @@ function RthroScaler.relative(character: Model, scale: number)
 	local scaledHeight = currentHeight * scale
 	setHeight(character, currentHeight, scaledHeight)
 end
+
+--[=[
+	Returns if the mass of a character is retained or not in the scaling process.
+
+	@return boolean
+]=]
+function RthroScaler.isMassRetained()
+	return isMassRetained
+end
+
+--[=[
+	Sets if the mass of a character is retained or not in the scaling process.
+
+	@param retained boolean
+]=]
+function RthroScaler.setMassRetained(retained: boolean)
+	isMassRetained = not not retained
+end
+
+--[=[
+	Returns the height of the provided character model.
+
+	@param character Model -- The target character model.
+	@return number
+]=]
+RthroScaler.getHeight = CharacterHelper.getHeight
+
+--[=[
+	Returns the height of a classic scaled character.
+
+	@return number
+]=]
+RthroScaler.getClassicHeight = CharacterHelper.getClassicHeight
 
 --
 
