@@ -1,9 +1,5 @@
 --!strict
 
-if true then
-	return
-end
-
 if false then
 	require(script.Debug)
 	return
