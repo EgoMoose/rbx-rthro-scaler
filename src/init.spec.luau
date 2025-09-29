@@ -4,7 +4,7 @@ local Players = game:GetService("Players") :: Players
 local AvatarEditorService = game:GetService("AvatarEditorService") :: AvatarEditorService
 
 local MARGIN_OF_ERROR = 1E-4
-local BUNDLES = { 5667, 474, 592, 370, 501, 3416, 338106, 319935, 389802, 393119, 382840, 295206, 512 }
+local BUNDLES = { 5667, 474, 592, 370, 501, 3416, 319935, 389802, 393119, 382840, 295206, 512 }
 
 local function humanoidDescriptionFromBundle(bundleId: number): HumanoidDescription?
 	local info: { [any]: any }?

@@ -4,6 +4,7 @@ local Players = game:GetService("Players") :: Players
 local AvatarEditorService = game:GetService("AvatarEditorService") :: AvatarEditorService
 
 local BUNDLE_ID = 5667
+local ANIMATIONS = true
 local SHOW_ROOT_PART = false
 local DISPLAY_DISTANCE_TYPE = Enum.HumanoidDisplayDistanceType.Viewer
 
@@ -88,14 +89,15 @@ local function spawnPlayerLoop(player: Player)
 	end
 end
 
-local animate = Instance.new("LocalScript")
-animate.Name = "Animate"
-animate.Parent = game.StarterPlayer.StarterCharacterScripts
+if not ANIMATIONS then
+	local animate = Instance.new("LocalScript")
+	animate.Name = "Animate"
+	animate.Parent = game.StarterPlayer.StarterCharacterScripts
+end
 
 Players.CharacterAutoLoads = false
 Players.PlayerAdded:Connect(function(player)
 	createDisplayDummies(player)
-
 	spawnPlayerLoop(player)
 end)
 

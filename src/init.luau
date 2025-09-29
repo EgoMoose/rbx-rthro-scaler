@@ -30,7 +30,7 @@ local function matchHeadToMesh(head: BasePart, headMesh: SpecialMesh)
 	end
 end
 
-local function setHeight(character: Model, currentHeight: number, height: number)
+local function _setHeight(character: Model, currentHeight: number, height: number)
 	local head = character:FindFirstChild("Head") :: BasePart?
 	local humanoid = character:FindFirstChildWhichIsA("Humanoid") :: Humanoid?
 	local rootPart = humanoid and humanoid.RootPart
@@ -133,6 +133,50 @@ local function setHeight(character: Model, currentHeight: number, height: number
 	end
 end
 
+local function setHeightViaModelScale(character: Model, currentHeight: number, height: number)
+	local humanoid = character:FindFirstChildWhichIsA("Humanoid") :: Humanoid?
+	local rootPart = humanoid and humanoid.RootPart
+
+	assert(humanoid, "Unable to find Humanoid.")
+	assert(rootPart, "Unable to find Humanoid.RootPart.")
+
+	local floorCF = rootPart.CFrame * CFrame.new(0, -(humanoid.HipHeight + rootPart.Size.Y / 2), 0)
+
+	local currentScale = character:GetScale()
+	local fullHeight = currentHeight / currentScale
+	local newScale = height / fullHeight
+
+	local massByLimb = {}
+	for _, limb in character:GetChildren() do
+		if limb:IsA("BasePart") and humanoid:GetLimb(limb) then
+			massByLimb[limb] = limb:GetMass()
+		end
+	end
+
+	local walkSpeed = humanoid.WalkSpeed
+	character:ScaleTo(newScale)
+	humanoid.WalkSpeed = walkSpeed
+
+	if isMassRetained then
+		for limb, mass in massByLimb do
+			local newMass = limb:GetMass()
+			local physicalProperties = limb.CurrentPhysicalProperties
+			local volume = newMass / physicalProperties.Density
+			local newDensity = mass / volume
+
+			limb.CustomPhysicalProperties = PhysicalProperties.new(
+				newDensity,
+				physicalProperties.Friction,
+				physicalProperties.Elasticity,
+				physicalProperties.FrictionWeight,
+				physicalProperties.ElasticityWeight
+			)
+		end
+	end
+
+	rootPart.CFrame = floorCF * CFrame.new(0, rootPart.Size.Y / 2 + humanoid.HipHeight, 0)
+end
+
 -- Public
 
 --[=[
@@ -143,7 +187,7 @@ end
 ]=]
 function RthroScaler.raw(character: Model, height: number)
 	local currentHeight = CharacterHelper.getHeight(character)
-	setHeight(character, currentHeight, height)
+	setHeightViaModelScale(character, currentHeight, height)
 end
 
 --[=[
@@ -155,7 +199,7 @@ end
 function RthroScaler.classic(character: Model, scale: number)
 	local currentHeight = CharacterHelper.getHeight(character)
 	local classicHeight = CharacterHelper.getClassicHeight() * scale
-	setHeight(character, currentHeight, classicHeight)
+	setHeightViaModelScale(character, currentHeight, classicHeight)
 end
 
 --[=[
@@ -167,7 +211,7 @@ end
 function RthroScaler.relative(character: Model, scale: number)
 	local currentHeight = CharacterHelper.getHeight(character)
 	local scaledHeight = currentHeight * scale
-	setHeight(character, currentHeight, scaledHeight)
+	setHeightViaModelScale(character, currentHeight, scaledHeight)
 end
 
 --[=[
