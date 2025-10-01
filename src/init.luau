@@ -18,7 +18,6 @@ local function setHeight(character: Model, currentHeight: number, height: number
 
 	local currentScale = character:GetScale()
 	local fullHeight = currentHeight / currentScale
-	print(fullHeight)
 	local newScale = height / fullHeight
 
 	local massByLimb = {}
@@ -29,8 +28,12 @@ local function setHeight(character: Model, currentHeight: number, height: number
 	end
 
 	local walkSpeed = humanoid.WalkSpeed
+	local jumpPower = humanoid.JumpPower
+	local jumpHeight = humanoid.JumpHeight
 	character:ScaleTo(newScale)
 	humanoid.WalkSpeed = walkSpeed
+	humanoid.JumpPower = jumpPower
+	humanoid.JumpHeight = jumpHeight
 
 	if isMassRetained then
 		for limb, mass in massByLimb do
