@@ -9,7 +9,7 @@ dependencies = []
 
 [[package]]
 name = "egomoose/rthro-scaler"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [["Deque", "egomoose/deque@0.2.1"], ["TestEZ", "roblox/testez@0.4.1"]]
 
 [[package]]
