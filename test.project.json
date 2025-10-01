@@ -16,8 +16,17 @@
 		},
 		"ServerScriptService": {
 			"$className": "ServerScriptService",
-			"TestRunner": {
-				"$path": "test"
+			"ServerEntry": {
+				"$path": "test/ServerEntry"
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"ClientEntry": {
+					"$path": "test/ClientEntry"
+				}
 			}
 		}
 	}
